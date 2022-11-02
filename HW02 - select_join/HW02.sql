@@ -52,13 +52,18 @@ select sup.SupplierID, sup.SupplierName
 from Purchasing.Suppliers sup
 left join Purchasing.PurchaseOrders ord
 on ord.SupplierID = sup.SupplierID
-
 except
-
 select sup.SupplierID, sup.SupplierName
 from Purchasing.Suppliers sup
 join Purchasing.PurchaseOrders ord
 on ord.SupplierID = sup.SupplierID
+
+
+select sup.SupplierID, sup.SupplierName
+from Purchasing.Suppliers sup
+left join Purchasing.PurchaseOrders ord
+on ord.SupplierID = sup.SupplierID
+where ord.PurchaseOrderID IS NULL
 
 /*
 3. «аказы (Orders) с ценой товара (UnitPrice) более 100$ 
@@ -119,12 +124,12 @@ sup.SupplierName,
 people.FullName
 --pord.IsOrderFinalized
 from Purchasing.Suppliers sup, Purchasing.PurchaseOrders pord, Application.DeliveryMethods met, Application.People people
-where sup.SupplierID=pord.SupplierID
-and sup.DeliveryMethodID=met.DeliveryMethodID
-and pord.ContactPersonID=people.PersonID
+where sup.SupplierID = pord.SupplierID
+and sup.DeliveryMethodID = met.DeliveryMethodID
+and pord.ContactPersonID = people.PersonID
 and pord.ExpectedDeliveryDate BETWEEN '2013-01-01' AND '2013-02-01'
 and met.DeliveryMethodName like '%Air Freight'
-and pord.IsOrderFinalized =1
+and pord.IsOrderFinalized = 1
 
 /*
 5. ƒес€ть последних продаж (по дате продажи) с именем клиента и именем сотрудника,
@@ -132,7 +137,16 @@ and pord.IsOrderFinalized =1
 —делать без подзапросов.
 */
 
-напишите здесь свое решение
+select top 10
+ord.OrderID,
+		ord.OrderDate,
+		cust.CustomerName, 
+		ppl.FullName as SalespersonName
+from Sales.Orders ord, Sales.Customers cust, Application.People ppl
+where ord.SalespersonPersonID=ppl.PersonID
+and cust.CustomerID=ord.CustomerID
+order by ord.OrderDate desc
+
 
 /*
 6. ¬се ид и имена клиентов и их контактные телефоны,
@@ -140,4 +154,13 @@ and pord.IsOrderFinalized =1
 »м€ товара смотреть в таблице Warehouse.StockItems.
 */
 
-напишите здесь свое решение
+select distinct
+	   cust.CustomerID,
+	   cust.CustomerName,
+	   cust.PhoneNumber
+from Sales.Orders ord
+INNER JOIN Sales.Customers cust ON cust.CustomerID = ord.CustomerID
+INNER JOIN Sales.OrderLines ol ON ol.OrderID = ord.OrderID
+INNER JOIN Warehouse.StockItems sti ON sti.StockItemID = ol.StockItemID
+where sti.StockItemName = 'Chocolate frogs 250g'
+order by cust.CustomerID
