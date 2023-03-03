@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSet Name="DataSet1">
+    <Query>
+      <DataSourceReference>WWI</DataSourceReference>
+      <CommandText>SELECT        ord.OrderID, format(ord.OrderDate, 'dd.MM.yyyy') AS OrderDate, DATENAME(month, DATEADD(month, MONTH(ord.OrderDate), 0) - 1) AS OrderNMonth, DATEPART(quarter, ord.OrderDate) AS OrderQuarter, 
+                         CASE WHEN month(ord.OrderDate) &lt; 5 THEN 1 WHEN month(ord.OrderDate) &gt; 4 AND month(ord.OrderDate) &lt; 9 THEN 2 ELSE 3 END AS OrderThird, custm.CustomerName, ordln.Quantity, ordln.UnitPrice
+FROM            Sales.Orders AS ord INNER JOIN
+                         Sales.Customers AS custm ON ord.CustomerID = custm.CustomerID INNER JOIN
+                         Sales.OrderLines AS ordln ON ord.OrderID = ordln.OrderID
+WHERE        (ordln.UnitPrice &gt; 100) AND (ordln.PickingCompletedWhen IS NOT NULL) OR
+                         (ordln.PickingCompletedWhen IS NOT NULL) AND (ordln.Quantity &gt; 20)
+ORDER BY OrderQuarter, OrderDate</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="OrderID">
+        <DataField>OrderID</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="OrderDate">
+        <DataField>OrderDate</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="OrderNMonth">
+        <DataField>OrderNMonth</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="OrderQuarter">
+        <DataField>OrderQuarter</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="OrderThird">
+        <DataField>OrderThird</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="CustomerName">
+        <DataField>CustomerName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="Quantity">
+        <DataField>Quantity</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="UnitPrice">
+        <DataField>UnitPrice</DataField>
+        <rd:TypeName>System.Decimal</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>
