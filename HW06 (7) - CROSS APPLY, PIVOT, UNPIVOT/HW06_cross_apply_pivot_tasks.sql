@@ -112,7 +112,7 @@ select c.CustomerID,
 c.CustomerName, (select top 1 il.UnitPrice
 				from Sales.Invoices i, Sales.InvoiceLines il
 				where i.InvoiceID = il.InvoiceID and i.CustomerID=c.CustomerID
-				order by il.UnitPrice)
+				order by il.UnitPrice desc)
 from Sales.Customers C
 ORDER BY C.CustomerName;
 */
@@ -123,5 +123,5 @@ FROM Sales.Customers C
 OUTER APPLY (select top 2 il.UnitPrice, il.StockItemID, i.InvoiceDate
 				from Sales.Invoices i, Sales.InvoiceLines il
 				where i.InvoiceID = il.InvoiceID and i.CustomerID=c.CustomerID
-				order by il.UnitPrice) AS O
+				order by il.UnitPrice desc) AS O
 ORDER BY C.CustomerName;
